@@ -16,7 +16,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import { t, validateNonEmpty } from '@superset-ui/core';
+import { t } from '@superset-ui/core';
+// import { t, validateNonEmpty } from '@superset-ui/core';
 import {
   ControlPanelConfig,
   // sections,
@@ -107,25 +108,47 @@ const config: ControlPanelConfig = {
       controlSetRows: [
         [
           {
-            name: 'cols',
+            name: 'columns',
             config: {
-              ...sharedControls.groupby,
+              ...sharedControls.columns,
               label: t('Columns'),
-              description: t('Columns to group by'),
+              description: t('Select columns to display in the table'),
             },
           },
         ],
+        // [
+        //   {
+        //     name: 'groups',
+        //     config: {
+        //       ...sharedControls.columns,
+        //       label: t('Groups'),
+        //       description: t('Columns to group by'),
+        //     },
+        //   },
+        // ],
         [
           {
-            name: 'metrics',
+            name: 'values',
             config: {
+              // ...sharedControls.columns,
               ...sharedControls.metrics,
-              // it's possible to add validators to controls if
-              // certain selections/types need to be enforced
-              validators: [validateNonEmpty],
+              label: t('Values'),
+              description: t('Values to find intersection'),
             },
           },
         ],
+        // [
+        //   {
+        //     name: 'metrics',
+        //     config: {
+        //       ...sharedControls.metrics,
+        //       // it's possible to add validators to controls if
+        //       // certain selections/types need to be enforced
+        //       label: t('Values'),
+        //       validators: [],
+        //     },
+        //   },
+        // ],
         ['adhoc_filters'],
         [
           {
