@@ -3,7 +3,7 @@ import { styled } from '@superset-ui/core';
 // @ts-ignore
 import * as venn from 'venn.js';
 // @ts-ignore
-import * as d3 from 'd3'
+import * as d3 from 'd3';
 import { VennDiagramProps, VennDiagramStylesProps } from './types';
 import ProcessData from './dataPrep';
 
@@ -23,9 +23,9 @@ const Styles = styled.div<VennDiagramStylesProps>`
     margin-top: 0;
     margin-bottom: ${({ theme }) => theme.gridUnit * 3}px;
     font-size: ${({ theme, headerFontSize }) =>
-    theme.typography.sizes[headerFontSize]}px;
+      theme.typography.sizes[headerFontSize]}px;
     font-weight: ${({ theme, boldText }) =>
-    theme.typography.weights[boldText ? 'bold' : 'normal']};
+      theme.typography.weights[boldText ? 'bold' : 'normal']};
   }
 
   /* Tooltip styles */
@@ -52,15 +52,19 @@ export default function VennDiagram(props: VennDiagramProps) {
     // Clear any existing diagram
     d3.select(root).select('svg').remove();
 
+    // Prepare the Venn diagram data
+    const finalData = ProcessData(data);
+    const vennData: { sets: string[]; size: number }[] = finalData.map(
+      (projectGroup) => ({
+        sets: projectGroup.set,
+        size: projectGroup.count,
+      }),
+    );
+
+    console.log('Venn Data:', vennData);
+
     // Set up the Venn diagram
     const chart = venn.VennDiagram().width(width).height(height);
-
-    const finalData = ProcessData(data);
-
-    const vennData: { sets: string[], size: number }[] = finalData.map((projectGroup) => ({
-      sets: projectGroup.set,
-      size: projectGroup.count,
-    }));
 
     const svg = d3
       .select(root)
@@ -68,30 +72,42 @@ export default function VennDiagram(props: VennDiagramProps) {
       .attr('width', width)
       .attr('height', height);
 
+    // Render the diagram
     svg.datum(vennData).call(chart);
 
-    // Create a tooltip div and append it to the body
-    const tooltip = d3.select('body').append('div').attr('class', 'tooltip');
+    // Tooltip setup
+    const tooltip = d3
+      .select('body')
+      .append('div')
+      .attr('class', 'tooltip');
 
-    // Add mouseover and mouseout events to show and hide the tooltip
+    // Mouseover and mouseout events for tooltip
     svg
-      .selectAll('path')
-      .on('mouseover', function (event:any, d:any) {
+      .selectAll('.venn-circle path') // Updated selector to target circles
+      .on('mouseover', function (event: any, d: any) {
         tooltip
           .style('opacity', 1)
-          .html(`Count: ${d.size}`)
+          .html(
+            `Sets: ${d.sets.join(', ')}<br>Count: ${d.size}`,
+          )
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY + 10}px`);
       })
-      .on('mouseout', function () {
+      .on('mouseout', () => {
         tooltip.style('opacity', 0);
       });
 
-    // Add labels to the diagram
+    // Update label styles for better readability
     svg
       .selectAll('text')
       .style('fill', 'black')
       .style('font-size', '12px');
+
+    // Cleanup on unmount or re-render
+    return () => {
+      tooltip.remove();
+      d3.select(root).select('svg').remove();
+    };
   }, [data, height, width]);
 
   return (
