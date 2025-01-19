@@ -1,6 +1,6 @@
 {
   "name": "superset-upset-chart",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Superset Upset Chart",
   "sideEffects": false,
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
     "esm",
     "lib"
   ],
-  "private": true,
+  "private": false,
   "scripts": {
     "build": "npm run build-cjs && npm run build-esm && npm run ts-types",
     "build-cjs": "babel src --extensions \".ts,.tsx,.js,.jsx\" --copy-files --out-dir lib",
@@ -21,7 +21,7 @@
     "ts-types": "tsc --build",
     "test": "jest"
   },
-  "author": "My Name",
+  "author": "Shantanu Khond",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
